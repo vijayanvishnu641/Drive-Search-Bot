@@ -5,7 +5,6 @@
     "keywords": [
       "telegram",
       "bot",
-      "aria",
       "python"
     ],
     "repository": "https://github.com/devillD/Drive-Search-Bot.git",
@@ -22,6 +21,6 @@
       },
       "TELEGRAPH_TOKEN": {
         "description": "Generate using python3 generate_telegraph_token.py.",
-        "required": true
+        "required": false
       }
     }
