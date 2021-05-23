@@ -11,7 +11,7 @@ def start(update, context):
     if update.message.chat.type == "private" :
         sendMessage(f"Hey <b>{update.message.chat.first_name}</b>. Welcome to <b>LoaderX Bot</b>", context.bot, update)
     else :
-        sendMessage("Am alive :)", context.bot, update)
+        sendMessage("Bot started :)", context.bot, update)
 
 @run_async
 def log(update, context):
