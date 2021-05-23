@@ -9,7 +9,7 @@ from .modules import authorize, list
 def start(update, context):
     LOGGER.info('UID: {} - UN: {} - MSG: {}'.format(update.message.chat.id,update.message.chat.username,update.message.text))
     if update.message.chat.type == "private" :
-        sendMessage(f"Hey <b>{update.message.chat.first_name}</b>. Welcome to <b>LoaderX Bot</b>", context.bot, update)
+        sendMessage(f"Hey <b>{update.message.chat.first_name}</b>. Welcome to <b>Search BOT </b>", context.bot, update)
     else :
         sendMessage("Bot started :)", context.bot, update)
 
