@@ -9,7 +9,7 @@ This is a telegram bot writen in python for searching files in Drive.
 
 - Clone this repo:
 ```
-git clone https://github.com/ayushteke/Drive-Search-Bot/tree/master
+git clone https://github.com/ayushteke/Drive-Search-Bot/
 cd search-bot
 ```
 
