@@ -87,7 +87,7 @@ class GoogleDriveHelper:
                     content += f'<b> | <a href="https://telegra.ph/{self.path[nxt_page]}">Next</a></b>'
                     nxt_page += 1
             telegra_ph.edit_page(path = self.path[prev_page],
-                                 title = 'LoaderX',
+                                 title = 'AT_BOTs',
                                  html_content=content)
         return
 
@@ -133,7 +133,7 @@ class GoogleDriveHelper:
             return "No Result Found :(", None
 
         for content in self.telegraph_content :
-            self.path.append(telegra_ph.create_page(title = 'LoaderX',
+            self.path.append(telegra_ph.create_page(title = 'AT_BOTs',
                                                 html_content=content )['path'])
 
         self.num_of_path = len(self.path)      
