@@ -1,6 +1,6 @@
 {
     "name": "Drive Search Bot",
-    "description": "Search file inside the google drive",
+    "description": "Search file inside the shared drive and folders",
     "logo": "https://i.ibb.co/m6V57dy/ds.jpg",
     "keywords": [
       "telegram",
@@ -8,9 +8,8 @@
       "aria",
       "python"
     ],
-    "repository": "https://github.com/devillD/Drive-Search-Bot.git",
-    "website": "https://github.com/devillD/Drive-Search-Bot/tree/master",
-    "success_url": "https://github.com/devillD/Drive-Search-Bot/tree/master/README.md",
+    "repository": "https://github.com/ayushteke/Drive-Search-Bot",
+    "website": "https://github.com/ayushteke/Drive-Search-Bot",
     "stack": "container",
       "env": {
       "BOT_TOKEN": {
