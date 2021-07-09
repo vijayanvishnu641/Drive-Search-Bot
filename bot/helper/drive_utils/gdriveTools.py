@@ -17,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 logging.getLogger('googleapiclient.discovery').setLevel(logging.ERROR)
 
 SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
-TELEGRAPHLIMIT = 95
+TELEGRAPHLIMIT = 200
 
 class GoogleDriveHelper:
     def __init__(self, name=None, listener=None):
@@ -41,6 +41,7 @@ class GoogleDriveHelper:
         except IndexError:
             return 'File too large'
 
+
     def authorize(self):
         # Get credentials
         credentials = None
@@ -61,15 +62,44 @@ class GoogleDriveHelper:
                 pickle.dump(credentials, token)
         return build('drive', 'v3', credentials=credentials, cache_discovery=False)
 
+    def get_recursive_list(self, file, rootid = "root"):
+        rtnlist = []
+        if not rootid:
+            rootid = file.get('teamDriveId')
+        if rootid == "root":
+            rootid = self.__service.files().get(fileId = 'root', fields="id").execute().get('id')
+        x = file.get("name")
+        y = file.get("id")
+        while(y != rootid):
+            rtnlist.append(x)
+            file = self.__service.files().get(
+                                            fileId=file.get("parents")[0],
+                                            supportsAllDrives=True,
+                                            fields='id, name, parents'
+                                            ).execute()
+            x = file.get("name")
+            y = file.get("id")
+        rtnlist.reverse()
+        return rtnlist
+
     def drive_query(self, parent_id, fileName):
-        query = f"'{parent_id}' in parents and (name contains '{fileName}')"
-        response = self.__service.files().list(supportsTeamDrives=True,
+        query = f"name contains '{fileName}' and trashed=false"
+        if parent_id != "root":
+            response = self.__service.files().list(supportsTeamDrives=True,
                                                includeTeamDriveItems=True,
+                                               teamDriveId=parent_id,
                                                q=query,
+                                               corpora='drive',
                                                spaces='drive',
                                                pageSize=200,
-                                               fields='files(id, name, mimeType, size)',
-                                               orderBy='modifiedTime desc').execute()["files"]
+                                               fields='files(id, name, mimeType, size, teamDriveId, parents)',
+                                               orderBy='folder, modifiedTime desc').execute()["files"]
+        else:
+            response = self.__service.files().list(q=query + " and 'me' in owners",
+                                               pageSize=200,
+                                               spaces='drive',
+                                               fields='files(id, name, mimeType, size, parents)',
+                                               orderBy='folder, modifiedTime desc').execute()["files"]
         return response
 
     def edit_telegraph(self):
@@ -101,24 +131,24 @@ class GoogleDriveHelper:
             INDEX += 1          
             if response:
                 if add_title_msg == True:
-                    msg = f'<h3>Search Results for : {fileName}</h3><br>@AT_BOTs <br><br>'
+                    msg = f'<h3>Search Results for : {fileName}</h3><br>@AT_BOTs #ProjektX<br><br>'
                     add_title_msg = False
                 msg += f"╾────────────╼<br><b>{DRIVE_NAME[INDEX]}</b><br>╾────────────╼<br>"
                 for file in response:
                     if file.get('mimeType') == "application/vnd.google-apps.folder":  # Detect Whether Current Entity is a Folder or File.
                         msg += f"📁<code>{file.get('name')}</code> <b>(folder)</b><br>" \
-                               f"<b><a href='https://drive.google.com/drive/folders/{file.get('id')}'>Drive Link</a></b>"
+                               f"<b><a href='https://drive.google.com/drive/folders/{file.get('id')}'>🌠 Drive Link 🌠</a></b>"
                         if INDEX_URL[INDEX] is not None:
-                            url_path = requests.utils.quote(f'{file.get("name")}')
+                            url_path = "/".join([requests.utils.quote(n, safe='') for n in self.get_recursive_list(file, parent_id)])
                             url = f'{INDEX_URL[INDEX]}/{url_path}/'
-                            msg += f'<b> | <a href="{url}">Index Link</a></b>'
+                            msg += f'<b> | <a href="{url}">☄️ Index Link ☄️</a></b>'
                     else:
                         msg += f"📄<code>{file.get('name')}</code> <b>({self.get_readable_file_size(file.get('size'))})</b><br>" \
-                               f"<b><a href='https://drive.google.com/uc?id={file.get('id')}&export=download'>Drive Link</a></b>"
+                               f"<b><a href='https://drive.google.com/uc?id={file.get('id')}&export=download'>🌠 Drive Link 🌠</a></b>"
                         if INDEX_URL[INDEX] is not None:
-                            url_path = requests.utils.quote(f'{file.get("name")}')
+                            url_path = "/".join([requests.utils.quote(n, safe ='') for n in self.get_recursive_list(file, parent_id)])
                             url = f'{INDEX_URL[INDEX]}/{url_path}'
-                            msg += f'<b> | <a href="{url}">Index Link</a></b>'
+                            msg += f'<b> | <a href="{url}">☄️ Index Link ☄️</a></b>'
                     msg += '<br><br>'
                     content_count += 1
                     if content_count == TELEGRAPHLIMIT :
@@ -140,7 +170,7 @@ class GoogleDriveHelper:
         if self.num_of_path > 1:
             self.edit_telegraph()
 
-        msg = f" Search Results For {fileName} 👇 "
+        msg = f" Search 🔍 Results For <b>{fileName}</b> 👇 "
         buttons = button_builder.ButtonMaker()   
         buttons.buildbutton("CLICK HERE", f"https://telegra.ph/{self.path[0]}")
 
