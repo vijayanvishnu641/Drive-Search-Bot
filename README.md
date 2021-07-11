@@ -9,6 +9,8 @@ This is a telegram bot writen in python for searching files in Drive.
 
 ## Deploying on Heroku
 ### Auto
+
+## before that add your groups ids in authorized_chats.txt file for getting it ready working for group
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?)
 
 
